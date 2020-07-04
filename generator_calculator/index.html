@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hairpin filter calculators</title>
+	<!-- Style -->
+	<link rel="stylesheet" href="./bootstrap.min.css">
+
+	<!-- JS -->
+<script type="text/javascript">
+window.onload = function(){
+  refreshSVG();
+  refreshHairpinLength();
+};
+function download(filename, text) 
+{
+  var e = document.createElement('a');
+  e.setAttribute('href', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(text));
+  e.setAttribute('download', filename);
+  e.style.display = 'none';
+  document.body.appendChild(e);
+  e.click();
+  document.body.removeChild(e);
+}
+// CONSTANTS
+var FEED_LENGTH = 10.0; // mm
+var MIN_VALID_FREQ = 500; // MHz
+var MAX_VALID_FREQ = 1500; // MHz
+var MIN_VALID_LENGTH = 1; // mm
+var MAX_VALID_LENGTH = 500; // mm
+// HAIRPIN CALCULATION
+function computeHairpinLength(frequency) {
+  return (4554.87 - 4.234395*parseFloat(frequency) + 0.001269205*parseFloat(frequency)*parseFloat(frequency))*0.0254;
+}
+// FILES GENERATION (SVG AND KICAD_MOD)
+function generateSVG(length) {
+  var resultSVG = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="210mm" height="297mm" viewBox="0 0 210 297" id="svg3919"><g id="layer1" style="display:inline"><text x="45" y="25" id="text4232" xml:space="preserve" style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans">ELEMENT_LENGTH mm hairpin filter</text><path d="m 90,100 0,TOTAL_LENGTH 2.54,0 0,-TOTAL_LENGTH z" id="path3085" style="fill:#000000;fill-opacity:1;stroke:none"/><path d="m 92.794,100 0,ELEMENT_LENGTH 2.54,0 0,-ELEMENT_LENGTH 2,0 0,ELEMENT_LENGTH 2.54,0 0,-ELEMENT_LENGTH -2.54,-2.54 -2,0 z" id="path3087" style="fill:#000000;fill-opacity:1;stroke:none"/><path d="m 101.874,100 0,ELEMENT_LENGTH 2.54,2.54 2,0 2.54,-2.54 0,-ELEMENT_LENGTH -2.54,0 0,ELEMENT_LENGTH -2,0 0,-ELEMENT_LENGTH z" id="path3089" style="fill:#000000;fill-opacity:1;stroke:none"/><path d="m 110.954,100 0,ELEMENT_LENGTH 2.54,0 0,-ELEMENT_LENGTH 2,0 0,ELEMENT_LENGTH 2.54,0 0,-ELEMENT_LENGTH -2.54,-2.54 -2,0 z" id="path3091" style="fill:#000000;fill-opacity:1;stroke:none"/><path d="m 118.288,100 0,TOTAL_LENGTH 2.54,0 0,-TOTAL_LENGTH z" id="path3093" style="fill:#000000;fill-opacity:1;stroke:none"/><path d="m 30,270 150,0" id="path3099" style="fill:none;stroke:#000000;stroke-width:1.95791667;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"/></g></svg>';
+  return resultSVG.replace(/ELEMENT_LENGTH/g, length).replace(/TOTAL_LENGTH/g, length+FEED_LENGTH);
+}
+function generateKicadMod(length) {
+  var kicadMod = '(module Hairpin_ELEMENT_LENGTH_mm (layer F.Cu) (tedit 5ECCFDBA)\n'+
+'  (fp_text reference Ref** (at 25.04 -8.2) (layer F.SilkS) hide\n'+
+'    (effects (font (size 1.27 1.27) (thickness 0.15)))\n'+
+'  )\n'+
+'  (fp_text value Val** (at 5.77 -8.25) (layer F.SilkS) hide\n'+
+'    (effects (font (size 1.27 1.27) (thickness 0.15)))\n'+
+'  )\n'+
+'  (fp_poly (pts (xy 2.54 0) (xy 0 0) (xy 0 -TOTAL_LENGTH) (xy 2.54 -TOTAL_LENGTH)) (layer F.Cu) (width 0.01))\n'+
+'  (fp_poly (pts (xy 2.794 -FEED_LENGTH) (xy 2.794 -TOTAL_LENGTH) (xy 5.334 -TOTAL_LENGTH_PLUS_1IN) (xy 7.334 -TOTAL_LENGTH_PLUS_1IN) (xy 9.874 -TOTAL_LENGTH)\n'+
+'    (xy 9.874 -FEED_LENGTH) (xy 7.334 -FEED_LENGTH) (xy 7.334 -TOTAL_LENGTH) (xy 5.334 -TOTAL_LENGTH) (xy 5.334 -FEED_LENGTH)) (layer F.Cu) (width 0.01))\n'+
+'  (fp_poly (pts (xy 11.874 -FEED_LENGTH) (xy 11.874 -TOTAL_LENGTH) (xy 14.414 -TOTAL_LENGTH) (xy 14.414 -FEED_LENGTH) (xy 16.414 -FEED_LENGTH)\n'+
+'    (xy 16.414 -TOTAL_LENGTH) (xy 18.954 -TOTAL_LENGTH) (xy 18.954 -FEED_LENGTH) (xy 16.414 -FEED_LENGTH_MINUS_1IN) (xy 14.414 -FEED_LENGTH_MINUS_1IN)) (layer F.Cu) (width 0.01))\n'+
+'  (fp_poly (pts (xy 20.954 -FEED_LENGTH) (xy 20.954 -TOTAL_LENGTH) (xy 23.494 -TOTAL_LENGTH_PLUS_1IN) (xy 25.494 -TOTAL_LENGTH_PLUS_1IN) (xy 28.034 -TOTAL_LENGTH)\n'+
+'    (xy 28.034 -FEED_LENGTH) (xy 25.494 -FEED_LENGTH) (xy 25.494 -TOTAL_LENGTH) (xy 23.494 -TOTAL_LENGTH) (xy 23.494 -FEED_LENGTH)) (layer F.Cu) (width 0.01))\n'+
+'  (fp_poly (pts (xy 30.828 0) (xy 28.288 0) (xy 28.288 -TOTAL_LENGTH) (xy 30.828 -TOTAL_LENGTH)) (layer F.Cu) (width 0.01)) \n'+
+'  (pad 1 smd rect (at 1.27 -1.27) (size 2.54 2.54) (layers F.Cu F.Mask))\n'+
+'  (pad 2 smd rect (at 29.558 -1.27) (size 2.54 2.54) (layers F.Cu F.Mask))\n'+
+')\n';
+  return kicadMod.replace(/FEED_LENGTH_MINUS_1IN/g,FEED_LENGTH-2.54).replace(/TOTAL_LENGTH_PLUS_1IN/g,length+FEED_LENGTH+2.54).replace(/FEED_LENGTH/g, FEED_LENGTH).replace(/TOTAL_LENGTH/g, length+FEED_LENGTH).replace(/ELEMENT_LENGTH/g, length);
+}
+function generateAndDownload(type) {
+  var length = parseFloat(document.getElementById("length").value);
+  if(length < MIN_VALID_LENGTH || length > MAX_VALID_LENGTH) {
+    alert("Please enter a length between "+MIN_VALID_LENGTH+"mm and "+MAX_VALID_LENGTH+"mm.");
+    return;
+  }
+  if(type === 'SVG'){
+    download("hairpinfilter_"+length+"_mm.svg",generateSVG(length));
+  }
+  else if(type === 'KICAD'){
+    download("Hairpin_"+length+"_mm.kicad_mod",generateKicadMod(length));
+  }
+}
+// PREVIEW
+var viewSVG = '<svg style="max-width: 100%;margin: auto;display: block;" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="WIDTHmm" height="40mm" viewBox="0 0 WIDTH 40" id="svg3919"><g id="layer1" style="display:inline" transform="matrix(0,1,1,0,0,-85)"><path d="m 90,10 0,TOTAL_LENGTH 2.54,0 0,-TOTAL_LENGTH z" id="path3085" style="fill:#222222;fill-opacity:1;stroke:none"/><path d="m 92.794,10 0,ELEMENT_LENGTH 2.54,0 0,-ELEMENT_LENGTH 2,0 0,ELEMENT_LENGTH 2.54,0 0,-ELEMENT_LENGTH -2.54,-2.54 -2,0 z" id="path3087" style="fill:#222222;fill-opacity:1;stroke:none"/><path d="m 101.874,10 0,ELEMENT_LENGTH 2.54,2.54 2,0 2.54,-2.54 0,-ELEMENT_LENGTH -2.54,0 0,ELEMENT_LENGTH -2,0 0,-ELEMENT_LENGTH z" id="path3089" style="fill:#222222;fill-opacity:1;stroke:none"/><path d="m 110.954,10 0,ELEMENT_LENGTH 2.54,0 0,-ELEMENT_LENGTH 2,0 0,ELEMENT_LENGTH 2.54,0 0,-ELEMENT_LENGTH -2.54,-2.54 -2,0 z" id="path3091" style="fill:#222222;fill-opacity:1;stroke:none"/><path d="m 118.288,10 0,TOTAL_LENGTH 2.54,0 0,-TOTAL_LENGTH z" id="path3093" style="fill:#222222;fill-opacity:1;stroke:none"/></g></svg>';
+function refreshSVG() {
+  var length = parseFloat(document.getElementById("length").value);
+  if(length >= MIN_VALID_LENGTH && length <= MAX_VALID_LENGTH) {
+    document.getElementById("invalid-length-alert").classList.add("hidden");
+    var viewBoxResult = viewSVG.replace(/ELEMENT_LENGTH/g, length).replace(/TOTAL_LENGTH/g, length+FEED_LENGTH).replace(/WIDTH/g, length+3*FEED_LENGTH);
+    document.getElementById("result").innerHTML = viewBoxResult;
+  } else {
+    document.getElementById("invalid-length-alert").classList.remove("hidden");
+  }
+}
+function refreshHairpinLength() {
+  var freq = parseFloat(document.getElementById("freq").value);
+  if(freq >= MIN_VALID_FREQ && freq <= MAX_VALID_FREQ) {
+    document.getElementById("invalid-freq-alert").classList.add("hidden");
+    document.getElementById("computed-length").value = computeHairpinLength(freq).toFixed(3);
+  } else {
+    document.getElementById("invalid-freq-alert").classList.remove("hidden");
+  }
+}
+</script>
+
+
+</head>
+<body>
+<div class="container">
+<h1>Hairpin filters calculators</h1>
+
+<h2>Hairpin filter generator</h2>
+
+This hairpin must be printed on one side of a standard <b>double sided 1.6mm thick</b> PCB. The back side must stay <b>copper coated</b> and be connect to the ground.
+
+<!-- Form 1 - HP generator -->
+<div class="hidden alert alert-danger" id="invalid-length-alert" role="alert">Invalid length (valid range: 1mm to 500mm).</div>
+<div id="result" style="max-width: 100%;margin: auto;"></div>
+<form class="form-horizontal" onsubmit="return false">
+  <div class="form-group">
+    <label class="col-sm-4 control-label" for="length">Elements length (mm)</label>
+    <div class="col-sm-8">
+      <input type="number" class="form-control" name="length" id="length" min="1" max="500" value="33" oninput="refreshSVG()">
+    </div>
+  </div>
+  <div class="form-group text-center">
+      <button type="button" class="btn btn-primary" onclick="generateAndDownload('KICAD')"><span class="fa fa-cogs"></span> Generate Kicad footprint</button>
+      <button type="button" class="btn btn-primary" onclick="generateAndDownload('SVG')"><span class="fa fa-cogs"></span> Generate SVG file</button>
+  </div>
+</form>
+
+On the SVG file, the horizontal line at the bottom of the page is 150mm, to check scaling after printing/importing.
+
+The generated topologies are designed to be used with standard female 50&Omega; SMA board-edge connectors. Solder the connector center signal pins to the hairpin feeder tracks and the ground pins to the bottom side.
+
+<h2>Hairpin length calculator</h2>
+
+<!-- Form 2 - HP length calculator -->
+<div class="hidden alert alert-danger" id="invalid-freq-alert" role="alert">Invalid frequency (valid range: 500 MHz to 1500 MHz).</div>
+<form class="form-horizontal" onsubmit="return false">
+  <div class="form-group">
+    <label class="col-sm-4 control-label" for="freq">Center frequency (MHz)</label>
+    <div class="col-sm-8">
+      <input type="number" class="form-control" name="freq" id="freq" min="500" max="1500" value="1090" oninput="refreshHairpinLength()">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-4 control-label" for="computed-length">Hairpin elements length (mm)</label>
+    <div class="col-sm-8">
+      <input type="text" class="form-control" name="computed-length" id="computed-length" readonly>
+    </div>
+  </div>
+</form>
+
+
+</div>
+</body>
+</html>
