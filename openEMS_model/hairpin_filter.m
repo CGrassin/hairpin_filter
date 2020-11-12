@@ -101,14 +101,9 @@ end
 % -------------------------------
 
 %% --- CREATE HAIRPIN STRUCTURE ----
-pt_feed_port = [0 hairpin.width hairpin.width 0;
-0 0 hairpin.length+hairpin.feed hairpin.length+hairpin.feed];
-pt_U = [0 0 hairpin.width hairpin.width+hairpin.D2_D3 hairpin.width*2+hairpin.D2_D3 
-hairpin.width*2+hairpin.D2_D3 hairpin.width+hairpin.D2_D3 hairpin.width+hairpin.D2_D3 hairpin.width hairpin.width;
-0 hairpin.length hairpin.length+hairpin.width hairpin.length+hairpin.width hairpin.length 0 0 hairpin.length hairpin.length 0];
-pt_U_inverted = [0 hairpin.width hairpin.width+hairpin.D2_D3 hairpin.width*2+hairpin.D2_D3
- hairpin.width*2+hairpin.D2_D3 hairpin.width+hairpin.D2_D3 hairpin.width+hairpin.D2_D3 hairpin.width hairpin.width 0;
-0 -hairpin.width -hairpin.width 0 hairpin.length hairpin.length 0 0 hairpin.length hairpin.length];
+pt_feed_port = [0 hairpin.width hairpin.width 0;0 0 hairpin.length+hairpin.feed hairpin.length+hairpin.feed];
+pt_U = [0 0 hairpin.width hairpin.width+hairpin.D2_D3 hairpin.width*2+hairpin.D2_D3 hairpin.width*2+hairpin.D2_D3 hairpin.width+hairpin.D2_D3 hairpin.width+hairpin.D2_D3 hairpin.width hairpin.width;0 hairpin.length hairpin.length+hairpin.width hairpin.length+hairpin.width hairpin.length 0 0 hairpin.length hairpin.length 0];
+pt_U_inverted = [0 hairpin.width hairpin.width+hairpin.D2_D3 hairpin.width*2+hairpin.D2_D3 hairpin.width*2+hairpin.D2_D3 hairpin.width+hairpin.D2_D3 hairpin.width+hairpin.D2_D3 hairpin.width hairpin.width 0;0 -hairpin.width -hairpin.width 0 hairpin.length hairpin.length 0 0 hairpin.length hairpin.length];
 
 % translate vector for relative positionning
 tl = [-substrate.x_size/2+hairpin.margin;-substrate.y_size/2];  
@@ -186,7 +181,7 @@ if (show == 1)
 end
 
 %% run openEMS
-RunOpenEMS( Sim_Path, Sim_CS);
+RunOpenEMS( Sim_Path, Sim_CSX);
 
 % -------------------------------
 
