@@ -51,7 +51,7 @@ feed.f_center = 1e9; % Feed center frequency
 feed.f_cut = 250e6;  % Feed -20 dB cut frequency
 
 % Misc setup
-show = 1; %open AppCSXCAD
+show_AppCSXCAD = 1; %open AppCSXCAD
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%% END OF CONFIGURATION %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,7 +83,7 @@ mesh.z = [0 SimBox(3)];
 
 %% Create substrate
 CSX = AddMaterial( CSX, 'FR4');
-CSX = SetMaterialProperty( CSX, 'FR4', 'Epsilon',substrate.epsilon, 
+CSX = SetMaterialProperty( CSX, 'FR4', 'Epsilon',substrate.epsilon, ...
                            'Mue', substrate.mu, 'Kappa', substrate.kappa);
 start = [-substrate.x_size/2  -substrate.y_size/2                    0];
 stop  = [ substrate.x_size/2   substrate.y_size/2  substrate.thickness];
@@ -143,15 +143,8 @@ CSX = AddBox(CSX, 'Et', 0, [min(mesh.x) min(mesh.y) min(mesh.z)], [max(mesh.x) m
 
 % -------------------------------
 
-% Smooth mesh
-##ifa_mesh = DetectEdges(CSX, [], 'SetProperty','Copper');
-##mesh.x = [mesh.x SmoothMeshLines(ifa_mesh.x, 0.5)]
-##mesh.y = [mesh.y SmoothMeshLines(ifa_mesh.y, 0.5)]
-%mesh.z = [mesh.z SmoothMeshLines(ifa_mesh.z, 0.5)];
-
 %% finalize the mesh
 % generate a smooth mesh with max. cell size: lambda_min / 20
-%mesh.x = SmoothMeshLines(mesh.x, 0.5);
 mesh.x = SmoothMeshLines(mesh.x, 2);
 mesh.y = SmoothMeshLines(mesh.y, 5);
 
@@ -176,7 +169,7 @@ WriteOpenEMS( [Sim_Path '/' Sim_CSX], FDTD, CSX );
 % -------------------------------
 
 %% show the structure
-if (show == 1)
+if (show_AppCSXCAD == 1)
   CSXGeomPlot( [Sim_Path '/' Sim_CSX] );
 end
 
